@@ -1,0 +1,25 @@
+[versions]
+agp = "8.11.0"
+android-compileSdk = "36"
+android-minSdk = "24"
+android-targetSdk = "36"
+compose-plugin = "1.8.2" # https://github.com/JetBrains/compose-multiplatform
+kotlin = "2.2.0" # https://kotlinlang.org/docs/releases.html
+kotlin-coroutines = "1.10.2" # https://github.com/Kotlin/kotlinx.coroutines
+androidx-activityCompose = "1.10.1" # https://mvnrepository.com/artifact/androidx.activity/activity-compose
+androidx-navigationCompose = "2.9.0-beta03" # https://mvnrepository.com/artifact/org.jetbrains.androidx.navigation/navigation-compose
+appcash-turbine = "1.2.1" # https://github.com/cashapp/turbine
+
+[libraries]
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
+androidx-navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "androidx-navigationCompose" }
+kotlin-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlin-coroutines" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlin-coroutines" }
+appcash-turbine = { module = "app.cash.turbine:turbine", version.ref = "appcash-turbine" }
+
+[plugins]
+androidApplication = { id = "com.android.application", version.ref = "agp" }
+androidLibrary = { id = "com.android.library", version.ref = "agp" }
+jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
