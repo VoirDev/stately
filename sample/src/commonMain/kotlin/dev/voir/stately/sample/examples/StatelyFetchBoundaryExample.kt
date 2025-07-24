@@ -25,8 +25,8 @@ fun StatelyFetchBoundaryExampleScreen() {
                 .padding(padding)
                 .padding(16.dp)
         ) {
-            StatelyFetchBoundary(
-                fetcher = {
+            StatelyFetchBoundary<String, String?>(
+                fetcher = { payload ->
                     delay(1500)
                     "Data from StatelyFetchBoundary"
                 },

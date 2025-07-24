@@ -20,7 +20,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun StatelyFetchContentExampleScreen() {
     val scope = rememberCoroutineScope()
-    val statelyFetch = rememberStatelyFetch(
+    val statelyFetch = rememberStatelyFetch<String>(
         fetcher = {
             delay(2000)
             "This is data from StatelyFetchContent"

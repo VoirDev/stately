@@ -9,6 +9,28 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 
 @Composable
+fun <Data, Payload : Any?> rememberStatelyFetch(
+    fetcher: suspend (payload: Payload?) -> Data,
+    scope: CoroutineScope = CoroutineScope(Dispatchers.IO),
+    revalidateInterval: Long? = null,
+    initiallyLoading: Boolean = true,
+    lazy: Boolean = false,
+    initialData: Data? = null,
+    initialPayload: Payload? = null,
+    autoRevalidateOnPayloadChange: Boolean = true,
+) = remember {
+    StatelyFetch(
+        fetcher = fetcher,
+        scope = scope,
+        revalidateInterval = revalidateInterval,
+        initialData = initialData,
+        initiallyLoading = initiallyLoading,
+        initialPayload = initialPayload,
+        lazy = lazy,
+    )
+}
+
+@Composable
 fun <Data> rememberStatelyFetch(
     fetcher: suspend () -> Data,
     scope: CoroutineScope = CoroutineScope(Dispatchers.IO),
@@ -17,13 +39,16 @@ fun <Data> rememberStatelyFetch(
     lazy: Boolean = false,
     initialData: Data? = null,
 ) = remember {
-    StatelyFetch<Data, Unit>(
-        fetcher = { fetcher() },
+    StatelyFetch(
+        fetcher = {
+            fetcher()
+        },
         scope = scope,
         revalidateInterval = revalidateInterval,
         initialData = initialData,
         initiallyLoading = initiallyLoading,
-        lazy = lazy
+        initialPayload = null,
+        lazy = lazy,
     )
 }
 
