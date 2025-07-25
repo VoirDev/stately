@@ -45,6 +45,8 @@ fun StatelyFetchExampleScreen() {
     var currentConfig by remember { mutableStateOf<FetchConfig?>(null) }
     var simulationVersion by remember { mutableIntStateOf(0) }
 
+    var payloadInput by remember { mutableStateOf<String?>(null) }
+
     Scaffold(
         topBar = {
             TopAppBar(title = { Text("StatelyFetch Example") })
@@ -94,13 +96,24 @@ fun StatelyFetchExampleScreen() {
                     modifier = Modifier.fillMaxWidth()
                 )
 
+                OutlinedTextField(
+                    value = payloadInput.orEmpty(),
+                    onValueChange = {
+                        payloadInput = it.ifBlank { null }
+                    },
+                    label = { Text("Initial payload value") },
+                    keyboardOptions = KeyboardOptions.Default,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
                 Button(onClick = {
                     currentConfig = FetchConfig(
                         simulateError = simulateError,
                         lazy = lazy,
                         initiallyLoading = initiallyLoading,
                         revalidateInterval = revalidateIntervalInput,
-                        initialData = initialData
+                        initialData = initialData,
+                        payload = payloadInput
                     )
                     simulationVersion++
                 }) {
@@ -121,21 +134,22 @@ fun StatelyFetchExampleScreen() {
 
 @Composable
 private fun FetchSimulation(config: FetchConfig) {
-    var counter by remember(config) { mutableIntStateOf(0) }
-
     val scope = rememberCoroutineScope()
 
-    val statelyFetch = rememberStatelyFetch(
-        fetcher = {
+    var currentPayload by remember(config) { mutableStateOf(config.payload) }
+
+    val statelyFetch = rememberStatelyFetch<String, String>(
+        fetcher = { payload ->
             delay(3000) // simulate network delay
             if (config.simulateError) throw Exception("Simulated Error")
-            "Fetched Data: ${counter++}"
+            "Fetched Data (payload=${payload ?: "none"})"
         },
         scope = scope,
         revalidateInterval = config.revalidateInterval,
         initiallyLoading = config.initiallyLoading,
         initialData = config.initialData,
-        lazy = config.lazy
+        lazy = config.lazy,
+        initialPayload = config.payload
     )
 
     val state by statelyFetch.state.collectAsState()
@@ -144,11 +158,33 @@ private fun FetchSimulation(config: FetchConfig) {
     Text("Loading: ${state.loading}")
     Text("Data: ${state.data ?: "null"}")
     Text("Error: ${state.error?.message ?: "none"}")
+
+    HorizontalDivider()
+
     Button(onClick = {
         statelyFetch.revalidate()
     }) {
         Text("Fetch/revalidate")
     }
+
+    Button(onClick = {
+        statelyFetch.revalidateDebounced(debounce = 3000)
+    }) {
+        Text("Fetch/revalidate with debounce")
+    }
+
+    HorizontalDivider()
+
+
+    OutlinedTextField(
+        value = currentPayload.orEmpty(),
+        onValueChange = {
+            currentPayload = it.ifBlank { null }
+            statelyFetch.revalidate(it.ifBlank { null }) // triggers fetch + tracks new payload
+        },
+        label = { Text("Change Payload") },
+        modifier = Modifier.fillMaxWidth()
+    )
 }
 
 private data class FetchConfig(
@@ -156,5 +192,6 @@ private data class FetchConfig(
     val lazy: Boolean,
     val initiallyLoading: Boolean,
     val revalidateInterval: Long?,
-    val initialData: String?
+    val initialData: String?,
+    val payload: String?
 )

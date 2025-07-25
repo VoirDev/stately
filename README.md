@@ -55,7 +55,7 @@ dependencies {
 }
 ```
 
-> Replace `<version>` with the version from your `build.gradle.kts`.
+> Replace `<version>` with the version from your `build.gradle.kts`. Currently 1.0.0-alpha01
 
 ---
 
@@ -89,11 +89,12 @@ A sample Jetpack Compose app with:
 ### StatelyFetch
 
 ```kotlin
-val fetch = StatelyFetch(
+val fetch = StatelyFetch<String, String>(
     fetcher = { payload -> api.loadData(payload) },
     revalidateInterval = 5000L,
     lazy = false,
-    initialData = null
+    initialData = null,
+    initialPayload = "",
 )
 ```
 
@@ -160,13 +161,6 @@ StatelyFetchBoundary(
 - ✅ Android
 - ✅ iOS
 - ✅ JVM
-
----
-
-## Roadmap
-
-- [ ] Auto cancellation
-- [ ] Debouncing
 
 ---
 
