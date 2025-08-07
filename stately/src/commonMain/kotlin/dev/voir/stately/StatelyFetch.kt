@@ -1,5 +1,6 @@
 package dev.voir.stately
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -146,6 +147,9 @@ class StatelyFetch<Data, Payload>(
                 val data = fetcher(payload)
                 // Update state with result.
                 _state.value = StatelyFetchResult(payload = payload, data = data, loading = false)
+            } catch (e: CancellationException) {
+                // cancellation is not an error.
+                throw e
             } catch (e: Exception) {
                 e.printStackTrace()
                 // On error, retain previous data and set error field.

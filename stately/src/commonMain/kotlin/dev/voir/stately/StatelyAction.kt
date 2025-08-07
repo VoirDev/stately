@@ -1,5 +1,6 @@
 package dev.voir.stately
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -40,6 +41,9 @@ class StatelyAction<Payload : Any, Response>(
                 _state.value = StatelyActionResult(response = response, loading = false)
 
                 onSuccess?.let { it(response) }
+            } catch (e: CancellationException) {
+                // cancellation is not an error.
+                throw e
             } catch (e: Exception) {
                 e.printStackTrace()
                 _state.value = StatelyActionResult(error = e, loading = false)
